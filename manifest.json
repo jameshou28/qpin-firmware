@@ -1,7 +1,7 @@
 {
   "version": "5.0",
   "build": 5,
-  "versionCode": 505,
+  "versionCode": 500,
   "releaseDate": "2026-05-13",
   "fileName": "QPin_v5.0.ino.bin",
   "url": "https://firmware.wearqpin.com/firmware/QPin_v5.0.ino.bin",
