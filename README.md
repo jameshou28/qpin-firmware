@@ -23,4 +23,4 @@ This repository hosts the Over-The-Air (OTA) firmware updates and the landing pa
 
 ## OTA Update Process
 
-When users check for updates in the QPin iOS app, the app fetches `manifest.json`, compares the `versionCode`, and ensures the badge has at least a 50% charge. It then downloads the `.bin` file and streams it to the badge over Bluetooth Low Energy (BLE).
+When users check for updates in the QPin iOS app, the app fetches `manifest.json`, compares the `versionCode`, and ensures the badge has at least a 50% charge. It then downloads the `.bin` file and streams it to the badge over Bluetooth Low Energy (BLE). 
