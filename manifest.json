@@ -1,0 +1,10 @@
+{
+  "version": "5.0",
+  "build": 5,
+  "versionCode": 505,
+  "releaseDate": "2026-05-13",
+  "fileName": "QPin_v5.0.ino.bin",
+  "url": "https://firmware.wearqpin.com/firmware/QPin_v5.0.ino.bin",
+  "minBatteryPercent": 50,
+  "notes": "Added BLE OTA firmware update support. No more USB cable needed for firmware updates."
+}

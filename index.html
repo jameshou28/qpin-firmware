@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QPin Firmware Update</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080808;
+      --surface:  #111111;
+      --border:   #222222;
+      --text:     #f0f0f0;
+      --muted:    #666666;
+      --accent:   #ffffff;
+      --green:    #22c55e;
+      --red:      #ef4444;
+      --amber:    #f59e0b;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    nav img { height: 28px; }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 72px 24px 120px;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header { margin-bottom: 56px; }
+    .page-header .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .page-header h1 {
+      font-size: clamp(28px, 5vw, 40px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .page-header p { color: var(--muted); font-size: 15px; max-width: 520px; }
+
+    /* ── NOTICE ── */
+    .notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #0f0f0f;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber);
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 40px;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .notice .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .notice strong { color: var(--text); }
+
+    /* ── STEPS ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    .steps::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      bottom: 40px;
+      width: 1px;
+      background: var(--border);
+    }
+    .step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 20px 0;
+    }
+    .step-num {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step-body { padding-top: 8px; }
+    .step-body h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    .step-body p { font-size: 13.5px; color: var(--muted); }
+    .step-body code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .card-body { padding: 28px 28px 24px; }
+
+    /* firmware info row */
+    .fw-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .fw-info .fw-label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 4px;
+    }
+    .fw-info .fw-version {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .fw-info .fw-date {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+    }
+    .badge {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(34,197,94,0.12);
+      color: var(--green);
+      border: 1px solid rgba(34,197,94,0.25);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* release notes */
+    .release-notes { margin-bottom: 24px; }
+    .release-notes h4 {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .release-notes ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .release-notes li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .release-notes li::before {
+      content: '→';
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* download button */
+    .btn-download {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-download:hover { opacity: 0.88; }
+    .btn-download:active { transform: scale(0.99); }
+    .btn-download svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .download-hint {
+      text-align: center;
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      margin-bottom: 56px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 32px;
+    }
+    footer img { height: 22px; margin-bottom: 12px; display: block; }
+    footer .tagline { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy { grid-column: 1/-1; font-size: 12px; color: #333; }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      main { padding: 48px 20px 80px; }
+      footer { padding: 32px 20px; grid-template-columns: 1fr; }
+      .footer-links { flex-wrap: wrap; gap: 16px; }
+      .fw-info { flex-direction: column; gap: 12px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="https://www.wearqpin.com/">
+    <img src="https://www.wearqpin.com/images/design-mode/logo2.png" alt="QPin" />
+  </a>
+  <ul>
+    <li><a href="https://www.wearqpin.com/">Home</a></li>
+    <li><a href="https://www.wearqpin.com/team">Team</a></li>
+  </ul>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <div class="page-header">
+    <div class="label">OTA Firmware Update</div>
+    <h1>Update Your QPin</h1>
+    <p>Download the latest firmware and flash it wirelessly to your QPin badge directly from the iOS app — no cables required.</p>
+  </div>
+
+  <!-- Battery notice -->
+  <div class="notice">
+    <span class="icon">🔋</span>
+    <div>
+      <strong>Charge to at least 50% before updating.</strong>
+      If the battery dies mid-update, the badge retains its current firmware and can be safely updated once recharged.
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Download the firmware</h3>
+        <p>Tap the button below on your iPhone. Safari will save <code>QPin_v5.0.ino.bin</code> to your Files app automatically.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Open the QPin app</h3>
+        <p>Connect to your QPin badge and confirm the battery is above 50%.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Go to About QPin</h3>
+        <p>Tap the QPin logo in the top-left corner to open the About page.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Select the firmware file</h3>
+        <p>Tap <strong>Install from file…</strong>, navigate to Downloads in Files, and choose <code>QPin_v5.0.ino.bin</code>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>Wait for the update to complete</h3>
+        <p>The badge displays <code>UPDATING</code> and reboots automatically. Keep your iPhone nearby until done.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download card -->
+  <div class="card">
+    <div class="card-body">
+
+      <div class="fw-info">
+        <div>
+          <div class="fw-label">Latest Firmware</div>
+          <div class="fw-version">v5.0</div>
+          <div class="fw-date">Released May 13, 2026</div>
+        </div>
+        <div class="badge">Latest</div>
+      </div>
+
+      <div class="release-notes">
+        <h4>What's new</h4>
+        <ul>
+          <li>BLE OTA firmware update — update wirelessly via the iOS app</li>
+          <li>Faster battery status on connect (~9s vs ~60s)</li>
+          <li>Battery safety check before firmware update</li>
+          <li>Improved charging detection and display</li>
+        </ul>
+      </div>
+
+      <a class="btn-download"
+         href="https://firmware.wearqpin.com/firmware/QPin_v5.0.ino.bin"
+         download="QPin_v5.0.ino.bin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download Firmware
+      </a>
+
+    </div>
+  </div>
+
+  <p class="download-hint">QPin_v5.0.ino.bin &nbsp;·&nbsp; Tap to save to Files app</p>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <img src="https://www.wearqpin.com/images/design-mode/logo2.png" alt="QPin" />
+    <div class="tagline">Making self-expression as dynamic in person as it is online.</div>
+  </div>
+  <div class="footer-links">
+    <a href="https://www.wearqpin.com/">Home</a>
+    <a href="https://www.wearqpin.com/team">Team</a>
+    <a href="mailto:support@wearqpin.com">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 QPIN. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
