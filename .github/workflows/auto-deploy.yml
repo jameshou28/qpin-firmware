@@ -19,6 +19,6 @@ jobs:
       - name: Push to vercel
         run: |
           git config user.email "james.william.hou@gmail.com"
-          git config user.name "James Hou"
+          git config user.name "jameshou28"
           git commit --allow-empty -m "Push to vercel"
           git push
