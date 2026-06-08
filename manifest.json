@@ -1,10 +1,9 @@
 {
   "version": "5.1",
-  "build": 1,
   "versionCode": 510,
-  "releaseDate": "2026-06-05",
+  "releaseDate": "2026-06-07",
   "fileName": "QPin_v5.1.ino.bin",
   "url": "https://firmware.wearqpin.com/firmware/QPin_v5.1.ino.bin",
   "minBatteryPercent": 50,
-  "notes": "Fixed battery Loading and Charging status handling"
+  "notes": "Fixed battery Loading and Charging status handling, and firmware version handling"
 }
